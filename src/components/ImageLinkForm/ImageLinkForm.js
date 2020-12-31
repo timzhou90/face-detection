@@ -14,7 +14,8 @@ const ImageLinkForm = ({onInputChange, onButtonSubmit, faceNumber}) =>{
     return <div> 
             <p className='f3'>
                 {'This image will be detect faces in your picture. Git it a try.'}
-            </p>
+            </p>   
+            {'eg: https://portal.clarifai.com/cms-assets/20180320221615/face-001.jpg'}
             <div className='center'>
                 <div className='form center pa4 br3 shadow-5'>
                     <input className='f4 pa2 w-70 center' type='tex' onChange = {(e)=>onInputChange(e)}/>
