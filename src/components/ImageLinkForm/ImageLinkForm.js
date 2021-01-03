@@ -5,17 +5,17 @@ const ImageLinkForm = ({onInputChange, onButtonSubmit, faceNumber}) =>{
     const faceNumberDiv = useMemo(()=>{
         if(!faceNumber){
             return <div>No faces in the image</div>
-        }else if(faceNumber == 0){
+        }else if(faceNumber === 0){
             return <div>No faces in the image</div>
         }else{
             return <div>There are {faceNumber} faces in the image</div>
         }
     },[faceNumber])
     return <div> 
-            <p className='f3'>
+            <div className='f3'>
                 {'This image will be detect faces in your picture. Git it a try.'}
-            </p>   
-            {'eg: https://portal.clarifai.com/cms-assets/20180320221615/face-001.jpg'}
+            </div>   
+           
             <div className='center'>
                 <div className='form center pa4 br3 shadow-5'>
                     <input className='f4 pa2 w-70 center' type='tex' onChange = {(e)=>onInputChange(e)}/>
@@ -26,7 +26,8 @@ const ImageLinkForm = ({onInputChange, onButtonSubmit, faceNumber}) =>{
                 </div>
          
             </div>
-            <p className='f4'> {faceNumberDiv}</p>  
+            {'eg: https://portal.clarifai.com/cms-assets/20180320221615/face-001.jpg'}
+            <span className='f4'> {faceNumberDiv}</span>  
             </div>
 }
 

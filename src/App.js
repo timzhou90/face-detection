@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect} from 'react';
 import './App.css';
 import Logo from './components/Logo/Logo';
 import Rank from './components/Rank/Rank';
@@ -6,14 +6,11 @@ import Navigation from './components/Navigation/Navigation'
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm'
 import Particles from 'react-particles-js';
-import Clarifai from 'clarifai';
 import Signin from './components/Signin/Signin';
 import Register from './components/Register/Register';
 function App() {
 
-const app = new Clarifai.App({
-    apiKey: '2dbf3b62820549418772c647dc90d3c6'
-});
+
 
 const [input, setInput] = useState("");
 const [imageUrl, setImageUrl] = useState("");
@@ -30,6 +27,7 @@ const [user, setUser] = useState(
   joined: ''
   }
 )
+
 const onInputChange = (event)=>{
    setInput(event.target.value)
 }
@@ -54,15 +52,46 @@ const calculateFaceLocation =(data) => {
   }
   return returnResult
 }
+
+useEffect(()=>{
+  //getInital()
+  fetch("https://radiant-reef-76548.herokuapp.com/")
+  .then(response => response.json())
+  .then(console.log)
+},[])
+
 const onButtonSubmit = ()=>{
 
-  setImageUrl(input); 
-  
-    app.models
-      .predict(
-        Clarifai.FACE_DETECT_MODEL,
-        input)
+    setImageUrl(input); 
+    
+      fetch("https://radiant-reef-76548.herokuapp.com/imageUrl",{
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            input: input,
+          })
+        })
+      .then(response => response.json())
       .then(response => {
+        if(response){
+          fetch("https://radiant-reef-76548.herokuapp.com/image",{
+            method: 'put',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              id:user.id,
+            })
+          })
+          .then(response => response.json())
+          .then(count => {
+            setUser({
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              entries: count,
+              joined: user.joined
+              })
+          })
+        }
         displayFaceBox(calculateFaceLocation(response))
       })
       .catch(err => console.log(err));  
@@ -80,7 +109,9 @@ const particlesOptions = {
     }
   }
 
+  
   const loadUser = (data) => {
+    console.log('loaduser 000 ', data )
     setUser({
       id: data.id,
       name: data.name,
@@ -91,9 +122,29 @@ const particlesOptions = {
   }
   const onRouteChange = (route) => {
     if (route === 'signout') {
+      setInput("");
+    setImageUrl("");
+    setFaceNumber (null);
+    setBox([]);
+    setRoute("signin")
+    setIsSignedIn (false)
+    setUser (
+      {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: ''
+      }
+    )
       setIsSignedIn(false)
     } else if (route === 'home') {
+      setBox([]);
+      setInput("");
+    setImageUrl("");
       setIsSignedIn(true)
+      setFaceNumber(null)
+      //getInital()
     }
     setRoute(route)
   }
@@ -106,14 +157,14 @@ const particlesOptions = {
       {route === "home"?
         <div>
           <Logo />
-          <Rank />
+          <Rank name ={user.name} entries = {user.entries}/>
           <ImageLinkForm onInputChange = {onInputChange} onButtonSubmit={onButtonSubmit} faceNumber={faceNumber}/>
           <FaceRecognition imageUrl={imageUrl} box={box}/>
         </div>
          : route === 'signin' ? 
-            <Signin onRouteChange = {onRouteChange}/> 
+            <Signin onRouteChange = {onRouteChange} loadUser={loadUser}/> 
             :
-            <Register onRouteChange = {onRouteChange} />
+            <Register onRouteChange = {onRouteChange} loadUser={loadUser}/>
         }
     </div>
   );
