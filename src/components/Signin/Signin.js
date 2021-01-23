@@ -69,6 +69,9 @@ const Signin = ({onRouteChange, loadUser})=>{
            onClick={() => onRouteChange('register')}
            className="f6 link dim black db pointer">Register</p>
         </div>
+        <div className="lh-copy mt3">
+          <p className="f6 link black db">email: tim@gmail.com; pwd:test</p>
+        </div>
       </div>
     </main>
   </article>
